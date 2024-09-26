@@ -1,9 +1,12 @@
 import { Handler } from '@yandex-cloud/function-types';
 import axios from 'axios';
 
-export const handler: Handler.Http = async (event, context) => {
+export const handler = async (data: any, context: any) => {
 	return {
 		statusCode: 200,
-		body: JSON.stringify(context),
+		body: {
+			data: JSON.stringify(data),
+			context: JSON.stringify(context),
+		},
 	};
 };
