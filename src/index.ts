@@ -90,6 +90,12 @@ export const handler: HttpHandler = async (data) => {
 		requestCfg.data = body;
 	}
 
+	if (include) {
+		requestCfg.transformResponse = (data) => {
+			return data;
+		};
+	}
+
 	// if (include) {
 	// 	requestCfg.transformResponse = (data) => {
 	// 		if (Array.isArray(data)) {
