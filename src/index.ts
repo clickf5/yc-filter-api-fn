@@ -92,37 +92,32 @@ export const handler: HttpHandler = async (data) => {
 
 	if (include) {
 		requestCfg.transformResponse = (data) => {
-			return data;
+			const parsedData = JSON.parse(data);
+			if (Array.isArray(parsedData)) {
+				return parsedData.map((item) =>
+					Object.entries(item).reduce(
+						(acc, [key, value]) => {
+							if (include.includes(key)) {
+								acc[key] = value;
+							}
+							return acc;
+						},
+						{} as Record<string, any>,
+					),
+				);
+			} else {
+				return Object.entries(parsedData).reduce(
+					(acc, [key, value]) => {
+						if (include.includes(key)) {
+							acc[key] = value;
+						}
+						return acc;
+					},
+					{} as Record<string, any>,
+				);
+			}
 		};
 	}
-
-	// if (include) {
-	// 	requestCfg.transformResponse = (data) => {
-	// 		if (Array.isArray(data)) {
-	// 			return data.map((item) =>
-	// 				Object.entries(item).reduce(
-	// 					(acc, [key, value]) => {
-	// 						if (include.includes(key)) {
-	// 							acc[key] = value;
-	// 						}
-	// 						return acc;
-	// 					},
-	// 					{} as Record<string, any>,
-	// 				),
-	// 			);
-	// 		} else {
-	// 			return Object.entries(data).reduce(
-	// 				(acc, [key, value]) => {
-	// 					if (include.includes(key)) {
-	// 						acc[key] = value;
-	// 					}
-	// 					return acc;
-	// 				},
-	// 				{} as Record<string, any>,
-	// 			);
-	// 		}
-	// 	};
-	// }
 
 	console.log(JSON.stringify(data));
 	console.log(JSON.stringify(requestCfg));
