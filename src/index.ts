@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 
 type HttpMethod = 'OPTIONS' | 'HEAD' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -22,7 +22,14 @@ interface Event {
 	requestContext: RequestContext & {
 		apiGateway?: {
 			operationContext: {
-				include: string[];
+				host?: string;
+				auth?: {
+					type: 'Basic' | 'Bearer';
+					token?: string;
+					user?: string;
+					password?: string;
+				};
+				include?: string[];
 			};
 		};
 	};
@@ -33,7 +40,7 @@ interface Event {
 
 interface Result {
 	statusCode: number;
-	headers?: Record<string, string>;
+	headers?: Record<string, any>;
 	multiValueHeaders?: Record<string, string[]>;
 	body?: string;
 	isBase64Encoded?: boolean;
@@ -42,8 +49,74 @@ interface Result {
 type HttpHandler = (event: Event) => Promise<Result>;
 
 export const handler: HttpHandler = async (data) => {
+	const {
+		url,
+		body,
+		httpMethod,
+		requestContext: { apiGateway: { operationContext: { host, auth, include } = {} } = {} } = {},
+	} = data;
+
+	const requestCfg: AxiosRequestConfig = {
+		url,
+		method: httpMethod.toLowerCase(),
+		baseURL: host,
+		headers: {
+			'Content-Type': 'application/json',
+			Accept: 'application/json',
+		},
+	};
+
+	if (auth && auth.type === 'Basic') {
+		requestCfg.auth = {
+			username: auth.user || '',
+			password: auth.password || '',
+		};
+	}
+
+	if (auth && auth.type === 'Bearer') {
+		requestCfg.headers = {
+			...requestCfg.headers,
+			Authorization: `Bearer ${auth.token || ''}`,
+		};
+	}
+
+	if (body) {
+		requestCfg.data = body;
+	}
+
+	if (include) {
+		requestCfg.transformResponse = (data) => {
+			if (Array.isArray(data)) {
+				return data.map((item) =>
+					Object.entries(item).reduce(
+						(acc, [key, value]) => {
+							if (include.includes(key)) {
+								acc[key] = value;
+							}
+							return acc;
+						},
+						{} as Record<string, any>,
+					),
+				);
+			} else {
+				return Object.entries(data).reduce(
+					(acc, [key, value]) => {
+						if (include.includes(key)) {
+							acc[key] = value;
+						}
+						return acc;
+					},
+					{} as Record<string, any>,
+				);
+			}
+		};
+	}
+
+	const response = await axios(requestCfg);
+
 	return {
-		statusCode: 200,
-		body: JSON.stringify(data),
+		statusCode: response.status,
+		body: JSON.stringify(response.data),
+		headers: response.headers,
 	};
 };
