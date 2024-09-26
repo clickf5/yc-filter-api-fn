@@ -33,9 +33,10 @@ interface Event {
 			};
 		};
 	};
-	body: string;
+	body?: string;
 	isBase64Encoded: boolean;
-	url: string;
+	path: string;
+	parameters?: Record<string, string>;
 }
 
 interface Result {
@@ -50,14 +51,15 @@ type HttpHandler = (event: Event) => Promise<Result>;
 
 export const handler: HttpHandler = async (data) => {
 	const {
-		url,
+		path,
 		body,
 		httpMethod,
+		parameters,
 		requestContext: { apiGateway: { operationContext: { host, auth, include } = {} } = {} } = {},
 	} = data;
 
 	const requestCfg: AxiosRequestConfig = {
-		url,
+		url: path,
 		method: httpMethod.toLowerCase(),
 		baseURL: host,
 		headers: {
@@ -78,6 +80,10 @@ export const handler: HttpHandler = async (data) => {
 			...requestCfg.headers,
 			Authorization: `Bearer ${auth.token || ''}`,
 		};
+	}
+
+	if (parameters) {
+		requestCfg.params = parameters;
 	}
 
 	if (body) {
