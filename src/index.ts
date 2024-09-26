@@ -90,33 +90,33 @@ export const handler: HttpHandler = async (data) => {
 		requestCfg.data = body;
 	}
 
-	if (include) {
-		requestCfg.transformResponse = (data) => {
-			if (Array.isArray(data)) {
-				return data.map((item) =>
-					Object.entries(item).reduce(
-						(acc, [key, value]) => {
-							if (include.includes(key)) {
-								acc[key] = value;
-							}
-							return acc;
-						},
-						{} as Record<string, any>,
-					),
-				);
-			} else {
-				return Object.entries(data).reduce(
-					(acc, [key, value]) => {
-						if (include.includes(key)) {
-							acc[key] = value;
-						}
-						return acc;
-					},
-					{} as Record<string, any>,
-				);
-			}
-		};
-	}
+	// if (include) {
+	// 	requestCfg.transformResponse = (data) => {
+	// 		if (Array.isArray(data)) {
+	// 			return data.map((item) =>
+	// 				Object.entries(item).reduce(
+	// 					(acc, [key, value]) => {
+	// 						if (include.includes(key)) {
+	// 							acc[key] = value;
+	// 						}
+	// 						return acc;
+	// 					},
+	// 					{} as Record<string, any>,
+	// 				),
+	// 			);
+	// 		} else {
+	// 			return Object.entries(data).reduce(
+	// 				(acc, [key, value]) => {
+	// 					if (include.includes(key)) {
+	// 						acc[key] = value;
+	// 					}
+	// 					return acc;
+	// 				},
+	// 				{} as Record<string, any>,
+	// 			);
+	// 		}
+	// 	};
+	// }
 
 	console.log(JSON.stringify(data));
 	console.log(JSON.stringify(requestCfg));
