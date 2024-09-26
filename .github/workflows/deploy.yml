@@ -1,0 +1,36 @@
+name: YC function deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Use node.js v18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Deploy YC function
+        id: sls-func
+        uses: yc-actions/yc-sls-function@v2
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
+          bucket: ${{ secrets.BUCKET }}
+          folder-id: 'b1g46471u05u2sfq1brd'
+          function-name: 'yc-filter-api-fn'
+          runtime: 'nodejs18'
+          execution-timeout: '600'
+          memory: '1024Mb'
+          entrypoint: 'dist/index.handler'
+          include: |
+            ./dist
+            package.json
+          exclude: |
+            **/*.ts
