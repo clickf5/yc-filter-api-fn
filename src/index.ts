@@ -91,8 +91,8 @@ export const handler: HttpHandler = async (data) => {
 	}
 
 	if (include) {
-		requestCfg.transformResponse = (data) => {
-			const parsedData = JSON.parse(data);
+		requestCfg.transformResponse = (data): any => {
+			const parsedData = data ? JSON.parse(data) : {};
 			if (Array.isArray(parsedData)) {
 				return parsedData.map((item) =>
 					Object.entries(item).reduce(
@@ -126,7 +126,7 @@ export const handler: HttpHandler = async (data) => {
 
 	return {
 		statusCode: response.status,
-		body: response.data ? JSON.stringify(response.data) : '',
+		body: response.data ? JSON.stringify(response.data) : JSON.stringify({}),
 		headers: response.headers,
 	};
 };
