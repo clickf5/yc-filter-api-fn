@@ -126,7 +126,7 @@ export const handler: HttpHandler = async (data) => {
 
 	return {
 		statusCode: response.status,
-		body: JSON.stringify(response.data),
+		body: response.data ? JSON.stringify(response.data) : '',
 		headers: response.headers,
 	};
 };
