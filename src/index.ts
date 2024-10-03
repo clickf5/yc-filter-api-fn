@@ -94,7 +94,7 @@ export const handler: HttpHandler = async (data) => {
 		requestCfg.transformResponse = (data): any => {
 			let parsedData: any = {};
 
-			if (!isNaN(data) && data !== null) {
+			if (data !== 'null') {
 				parsedData = JSON.parse(data);
 			}
 
@@ -124,8 +124,8 @@ export const handler: HttpHandler = async (data) => {
 		};
 	}
 
-	console.log(JSON.stringify(data));
-	console.log(JSON.stringify(requestCfg));
+	// console.log(JSON.stringify(data));
+	// console.log(JSON.stringify(requestCfg));
 
 	const response = await axios(requestCfg);
 
