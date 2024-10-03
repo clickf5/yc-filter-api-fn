@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
-type HttpMethod = 'OPTIONS' | 'HEAD' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+export type HttpMethod = 'OPTIONS' | 'HEAD' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 type RequestContext = {
 	identity: {
@@ -13,7 +13,7 @@ type RequestContext = {
 	requestTimeEpoch: number;
 };
 
-interface Event {
+export interface Event {
 	httpMethod: HttpMethod;
 	headers: Record<string, string>;
 	multiValueHeaders: Record<string, string[]>;
@@ -92,7 +92,12 @@ export const handler: HttpHandler = async (data) => {
 
 	if (include) {
 		requestCfg.transformResponse = (data): any => {
-			const parsedData = data ? JSON.parse(data) : {};
+			let parsedData: any = {};
+
+			if (!isNaN(data) && data !== null) {
+				parsedData = JSON.parse(data);
+			}
+
 			if (Array.isArray(parsedData)) {
 				return parsedData.map((item) =>
 					Object.entries(item).reduce(
@@ -126,7 +131,7 @@ export const handler: HttpHandler = async (data) => {
 
 	return {
 		statusCode: response.status,
-		body: response.data ? JSON.stringify(response.data) : JSON.stringify({}),
+		body: JSON.stringify(response.data),
 		headers: response.headers,
 	};
 };
