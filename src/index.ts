@@ -111,7 +111,7 @@ export const handler: HttpHandler = async (data) => {
 
 		requestCfg.data = newData;
 
-		console.log('anything there');
+		// console.log('anything there');
 	}
 
 	if (include) {
@@ -148,7 +148,7 @@ export const handler: HttpHandler = async (data) => {
 		};
 	}
 
-	// console.log(JSON.stringify(data));
+	console.log(JSON.stringify(data));
 	// console.log(JSON.stringify(requestCfg));
 
 	const response = await axios(requestCfg);
