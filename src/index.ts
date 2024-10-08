@@ -58,6 +58,7 @@ export const handler: HttpHandler = async (data) => {
 		parameters,
 		headers: { 'Content-Type': contentType = '', 'Content-Length': contentLength = '' } = {},
 		requestContext: { apiGateway: { operationContext: { host, auth, include } = {} } = {} } = {},
+		isBase64Encoded,
 	} = data;
 
 	const requestCfg: AxiosRequestConfig = {
@@ -90,6 +91,10 @@ export const handler: HttpHandler = async (data) => {
 
 	if (body) {
 		requestCfg.data = body;
+	}
+
+	if (isBase64Encoded) {
+		console.log('isBase64Encoded: ' + isBase64Encoded);
 	}
 
 	if (contentType.includes('multipart/form-data')) {
