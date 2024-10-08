@@ -97,11 +97,11 @@ export const handler: HttpHandler = async (data) => {
 		const form = new FormData();
 
 		Object.entries(fields).forEach(([key, value]) => {
-			form.append(key, value);
+			form.set(key, value);
 		});
 
-		files.forEach((file, index) => {
-			form.append('files', Readable.from(file.content));
+		files.forEach((file) => {
+			form.set('files', Readable.from(file.content));
 		});
 
 		requestCfg.data = form;
