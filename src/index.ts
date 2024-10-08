@@ -55,6 +55,7 @@ export const handler: HttpHandler = async (data) => {
 		body,
 		httpMethod,
 		parameters,
+		headers,
 		requestContext: { apiGateway: { operationContext: { host, auth, include } = {} } = {} } = {},
 	} = data;
 
@@ -79,6 +80,14 @@ export const handler: HttpHandler = async (data) => {
 		requestCfg.headers = {
 			...requestCfg.headers,
 			Authorization: `Bearer ${auth.token || ''}`,
+		};
+	}
+
+	if (headers['Content-Type'].split(';')[0] === 'multipart/form-data') {
+		requestCfg.headers = {
+			...requestCfg.headers,
+			'Content-Type': headers['Content-Type'],
+			'Content-Length': headers['Content-Length'],
 		};
 	}
 
