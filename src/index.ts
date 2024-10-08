@@ -96,7 +96,7 @@ export const handler: HttpHandler = async (data) => {
 	if (isBase64Encoded) {
 		console.log('isBase64Encoded: ' + isBase64Encoded);
 		const decoded = Buffer.from(body ?? '', 'base64').toString('utf-8');
-		console.log(decoded);
+		console.log(`decoded: ${decoded}`);
 	}
 
 	if (contentType.includes('multipart/form-data')) {
