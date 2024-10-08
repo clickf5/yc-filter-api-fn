@@ -102,6 +102,8 @@ export const handler: HttpHandler = async (data) => {
 				form.append(part.name ?? '', part.data.toString());
 			}
 		}
+
+		requestCfg.data = form;
 	}
 
 	if (include) {
