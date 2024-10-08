@@ -88,11 +88,13 @@ export const handler: HttpHandler = async (data) => {
 	}
 
 	if (headers['Content-Type'].includes('multipart/form-data')) {
-		requestCfg.data = Buffer.from(body ?? '', 'base64');
+		requestCfg.data = Buffer.from(body ?? '', 'base64').toString('binary');
 		requestCfg.headers = {
 			...requestCfg.headers,
 			'Content-Type': 'multipart/form-data',
-			'Content-Length': Buffer.from(body ?? '', 'base64').length.toString(),
+			'Content-Length': Buffer.from(body ?? '', 'base64')
+				.toString('binary')
+				.length.toString(),
 		};
 	}
 
