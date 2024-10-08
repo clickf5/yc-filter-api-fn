@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import parser from 'lambda-multipart-parser';
 
 export type HttpMethod = 'OPTIONS' | 'HEAD' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -99,7 +100,12 @@ export const handler: HttpHandler = async (data) => {
 			'Content-Type': contentType,
 		};
 
-		requestCfg.data = isBase64Encoded ? Buffer.from(body ?? '', 'base64').toString('utf-8') : body;
+		const parsed = await parser.parse({
+			...data,
+			body: Buffer.from(body ?? '', 'base64').toString(),
+		});
+
+		console.log(JSON.stringify(parsed));
 	}
 
 	if (include) {
@@ -136,8 +142,8 @@ export const handler: HttpHandler = async (data) => {
 		};
 	}
 
-	console.log(JSON.stringify(data));
-	console.log(JSON.stringify(requestCfg));
+	// console.log(JSON.stringify(data));
+	// console.log(JSON.stringify(requestCfg));
 
 	const response = await axios(requestCfg);
 
