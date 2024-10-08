@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import parser from 'lambda-multipart-parser';
+import multipart from 'parse-multipart-data';
 
 export type HttpMethod = 'OPTIONS' | 'HEAD' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -103,17 +103,16 @@ export const handler: HttpHandler = async (data) => {
 	}
 
 	if (headers['Content-Type'].includes('multipart/form-data')) {
-		const { files, ...fields } = await parser.parse(data);
+		const rowBody = Buffer.from(body ?? '', 'base64');
+		const boundary = headers['Content-Type'].split('boundary=')[1];
+
+		const parts = multipart.parse(rowBody, boundary);
 
 		const formData = new FormData();
 
-		Object.entries(fields).forEach(([key, value]) => {
-			formData.append(key, value);
-		});
-
-		files.forEach((file) => {
-			formData.append(file.fieldname, file.content);
-		});
+		for (const part of parts) {
+			console.log('part: ', JSON.stringify(part));
+		}
 
 		requestCfg.data = formData;
 	}
