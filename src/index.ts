@@ -105,11 +105,6 @@ export const handler: HttpHandler = async (data) => {
 		});
 
 		requestCfg.data = form;
-
-		requestCfg.headers = {
-			...requestCfg.headers,
-			'Content-type': 'multipart/form-data',
-		};
 	}
 
 	if (include) {
