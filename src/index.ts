@@ -66,10 +66,6 @@ export const handler: HttpHandler = async (data) => {
 		url: path,
 		method: httpMethod.toLowerCase(),
 		baseURL: host,
-		headers: {
-			'Content-Type': 'application/json',
-			Accept: 'application/json',
-		},
 	};
 
 	if (auth && auth.type === 'Basic') {
