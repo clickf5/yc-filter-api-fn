@@ -1,4 +1,5 @@
 import { Readable } from 'stream';
+import FormData from 'form-data';
 import axios, { AxiosRequestConfig } from 'axios';
 import parser from 'lambda-multipart-parser';
 
@@ -94,12 +95,6 @@ export const handler: HttpHandler = async (data) => {
 	}
 
 	if (contentType.includes('multipart/form-data')) {
-		requestCfg.headers = {
-			...requestCfg.headers,
-			'Content-Length': contentLength,
-			'Content-Type': contentType,
-		};
-
 		const { files, ...fields } = await parser.parse(data);
 
 		console.log('fields: ', JSON.stringify(fields));
@@ -111,15 +106,16 @@ export const handler: HttpHandler = async (data) => {
 		});
 
 		files.forEach((file, index) => {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-expect-error
-			console.log(`file[${index}]:`, JSON.stringify(file.content.data));
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-expect-error
-			form.append('files', Readable.from(file.content.data));
+			form.append('files', Readable.from(file.content));
 		});
 
 		requestCfg.data = form;
+
+		requestCfg.headers = {
+			...requestCfg.headers,
+			maxBodyLength: Infinity,
+			...form.getHeaders(),
+		};
 	}
 
 	if (include) {
