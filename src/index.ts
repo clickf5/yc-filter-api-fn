@@ -102,13 +102,16 @@ export const handler: HttpHandler = async (data) => {
 
 		const { files, ...fields } = await parser.parse(data);
 
+		console.log('fields: ', JSON.stringify(fields));
+
 		const form = new FormData();
 
 		Object.entries(fields).forEach(([key, value]) => {
 			form.append(key, value);
 		});
 
-		files.forEach((file) => {
+		files.forEach((file, index) => {
+			console.log(`file[${index}]:`, JSON.stringify(file));
 			form.append('files', Readable.from(file.content));
 		});
 
