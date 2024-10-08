@@ -56,7 +56,7 @@ export const handler: HttpHandler = async (data) => {
 		body,
 		httpMethod,
 		parameters,
-		headers: { 'Content-Type': contentType, 'Content-Length': contentLength } = {},
+		headers: { 'Content-Type': contentType = '', 'Content-Length': contentLength = '' } = {},
 		requestContext: { apiGateway: { operationContext: { host, auth, include } = {} } = {} } = {},
 	} = data;
 
@@ -92,16 +92,16 @@ export const handler: HttpHandler = async (data) => {
 		requestCfg.data = body;
 	}
 
-	// if (contentType.includes('multipart/form-data')) {
-	// 	// requestCfg.headers = {
-	// 	// 	...requestCfg.headers,
-	// 	// 	'Content-Length': contentLength,
-	// 	// 	'Content-Type': 'multipart/form-data',
-	// 	// };
-	//
-	// 	const parsedBody = await parser.parse(data);
-	// 	console.log(`parsedBody: ${JSON.stringify(parsedBody)}`);
-	// }
+	if (contentType.includes('multipart/form-data')) {
+		requestCfg.headers = {
+			...requestCfg.headers,
+			'Content-Length': contentLength,
+			'Content-Type': contentType,
+		};
+
+		const parsedBody = await parser.parse(data);
+		console.log(`parsedBody: ${JSON.stringify(parsedBody)}`);
+	}
 
 	if (include) {
 		requestCfg.transformResponse = (data): any => {
