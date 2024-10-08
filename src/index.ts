@@ -153,11 +153,17 @@ export const handler: HttpHandler = async (data) => {
 	// console.log(JSON.stringify(requestCfg));
 	// console.log('body: ', data.body);
 
-	const response = await axios(requestCfg);
-
-	return {
-		statusCode: response.status,
-		body: JSON.stringify(response.data),
-		headers: response.headers,
-	};
+	try {
+		const response = await axios(requestCfg);
+		return {
+			statusCode: response.status,
+			body: JSON.stringify(response.data),
+			headers: response.headers,
+		};
+	} catch (error) {
+		return {
+			statusCode: 500,
+			body: JSON.stringify(error),
+		};
+	}
 };
