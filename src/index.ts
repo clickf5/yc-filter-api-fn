@@ -1,7 +1,4 @@
-import { Readable } from 'stream';
-import FormData from 'form-data';
 import axios, { AxiosRequestConfig } from 'axios';
-import parser from 'lambda-multipart-parser';
 
 export type HttpMethod = 'OPTIONS' | 'HEAD' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -58,8 +55,9 @@ export const handler: HttpHandler = async (data) => {
 		body,
 		httpMethod,
 		parameters,
-		headers: { 'Content-Type': contentType = '', 'Content-Length': contentLength = '' } = {},
+		headers,
 		requestContext: { apiGateway: { operationContext: { host, auth, include } = {} } = {} } = {},
+		isBase64Encoded,
 	} = data;
 
 	const requestCfg: AxiosRequestConfig = {
@@ -90,28 +88,15 @@ export const handler: HttpHandler = async (data) => {
 		requestCfg.data = body;
 	}
 
-	if (contentType.includes('multipart/form-data')) {
-		const { files, ...fields } = await parser.parse(data);
-
-		console.log('fields: ', JSON.stringify(fields));
-
-		const form = new FormData();
-
-		Object.entries(fields).forEach(([key, value]) => {
-			form.append(key, value);
-		});
-
-		files.forEach((file, index) => {
-			form.append('files', Readable.from(file.content));
-		});
-
-		requestCfg.data = form;
+	if (headers['Content-Type'].includes('multipart/form-data')) {
+		const { Authorization: authorization, ...otherHeaders } = headers;
 
 		requestCfg.headers = {
 			...requestCfg.headers,
-			maxBodyLength: Infinity,
-			...form.getHeaders(),
+			...otherHeaders,
 		};
+
+		requestCfg.data = isBase64Encoded ? Buffer.from(body ?? '', 'base64').toString('utf8') : body;
 	}
 
 	if (include) {
