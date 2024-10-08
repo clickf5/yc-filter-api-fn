@@ -93,12 +93,6 @@ export const handler: HttpHandler = async (data) => {
 		requestCfg.data = body;
 	}
 
-	if (isBase64Encoded) {
-		console.log('isBase64Encoded: ' + isBase64Encoded);
-		const decoded = Buffer.from(body ?? '', 'base64').toString('utf-8');
-		console.log(`decoded: ${decoded}`);
-	}
-
 	if (contentType.includes('multipart/form-data')) {
 		requestCfg.headers = {
 			...requestCfg.headers,
@@ -106,7 +100,10 @@ export const handler: HttpHandler = async (data) => {
 			'Content-Type': contentType,
 		};
 
-		const parsedBody = await parser.parse(data);
+		const parsedBody = await parser.parse({
+			...data,
+			body: isBase64Encoded ? Buffer.from(body ?? '', 'base64').toString('utf-8') : body,
+		});
 		console.log(`parsedBody: ${JSON.stringify(parsedBody)}`);
 	}
 
