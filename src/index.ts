@@ -103,17 +103,13 @@ export const handler: HttpHandler = async (data) => {
 
 		const { files, ...fields } = await parser.parse(data);
 
-		const formData = new FormData();
-
-		Object.entries(fields).forEach(([key, value]) => {
-			formData.append(key, value);
-		});
+		const newData = { ...fields };
 
 		files.forEach((file, index) => {
-			formData.append(`files[${index}]`, new Blob([file.content]), file.filename);
+			newData[`files[${index}]`] = file.content.toString('base64');
 		});
 
-		requestCfg.data = formData;
+		requestCfg.data = newData;
 
 		console.log('anything there');
 	}
