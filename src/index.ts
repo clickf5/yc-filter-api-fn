@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import parser from 'lambda-multipart-parser';
 
 export type HttpMethod = 'OPTIONS' | 'HEAD' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -55,7 +56,7 @@ export const handler: HttpHandler = async (data) => {
 		body,
 		httpMethod,
 		parameters,
-		headers,
+		headers: { 'Content-Type': contentType, 'Content-Length': contentLength } = {},
 		requestContext: { apiGateway: { operationContext: { host, auth, include } = {} } = {} } = {},
 	} = data;
 
@@ -89,6 +90,17 @@ export const handler: HttpHandler = async (data) => {
 
 	if (body) {
 		requestCfg.data = body;
+	}
+
+	if (contentType.includes('multipart/form-data')) {
+		// requestCfg.headers = {
+		// 	...requestCfg.headers,
+		// 	'Content-Length': contentLength,
+		// 	'Content-Type': 'multipart/form-data',
+		// };
+
+		const parsedBody = await parser.parse(body);
+		console.log(`parsedBody: ${JSON.stringify(parsedBody)}`);
 	}
 
 	if (include) {
