@@ -100,9 +100,13 @@ export const handler: HttpHandler = async (data) => {
 			'Content-Type': contentType,
 		};
 
-		const parsed = await parser.parse(data);
+		requestCfg.transformRequest = (data) => {
+			return Buffer.from(data, 'base64').toString('utf8');
+		};
 
-		console.log('parsed: ', JSON.stringify(parsed));
+		// const parsed = await parser.parse(data);
+
+		// console.log('parsed: ', JSON.stringify(parsed));
 	}
 
 	if (include) {
