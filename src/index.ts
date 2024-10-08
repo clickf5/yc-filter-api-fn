@@ -99,7 +99,7 @@ export const handler: HttpHandler = async (data) => {
 		// 	'Content-Type': 'multipart/form-data',
 		// };
 
-		const parsedBody = await parser.parse(body);
+		const parsedBody = await parser.parse(data);
 		console.log(`parsedBody: ${JSON.stringify(parsedBody)}`);
 	}
 
