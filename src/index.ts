@@ -111,8 +111,12 @@ export const handler: HttpHandler = async (data) => {
 		});
 
 		files.forEach((file, index) => {
-			console.log(`file[${index}]:`, JSON.stringify(file));
-			form.append('files', Readable.from(file.content));
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
+			console.log(`file[${index}]:`, JSON.stringify(file.content.data));
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
+			form.append('files', Readable.from(file.content.data));
 		});
 
 		requestCfg.data = form;
