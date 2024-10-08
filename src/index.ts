@@ -102,7 +102,7 @@ export const handler: HttpHandler = async (data) => {
 		});
 
 		files.forEach((file, index) => {
-			form.append('files', Readable.from(file.content));
+			form.append('files', file.content);
 		});
 
 		requestCfg.data = form;
