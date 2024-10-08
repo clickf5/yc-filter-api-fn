@@ -97,7 +97,7 @@ export const handler: HttpHandler = async (data) => {
 			'Content-Length': headers['Content-Length'],
 		};
 
-		requestCfg.data = isBase64Encoded ? Buffer.from(body ?? '', 'base64').toString('utf8') : body;
+		requestCfg.data = isBase64Encoded ? Buffer.from(body ?? '', 'base64') : body;
 	}
 
 	if (include) {
