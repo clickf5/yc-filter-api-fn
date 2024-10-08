@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import parser from 'lambda-multipart-parser';
 
 export type HttpMethod = 'OPTIONS' | 'HEAD' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -49,6 +50,20 @@ interface Result {
 
 type HttpHandler = (event: Event) => Promise<Result>;
 
+// нужно отрабатывать 400 ошибки
+axios.interceptors.response.use(
+	(response) => {
+		return response;
+	},
+	function (error) {
+		if (error.response.status >= 400 && error.response.status <= 499) {
+			return Promise.resolve(error.response);
+		} else {
+			return Promise.reject(error.response);
+		}
+	},
+);
+
 export const handler: HttpHandler = async (data) => {
 	const {
 		path,
@@ -88,10 +103,19 @@ export const handler: HttpHandler = async (data) => {
 	}
 
 	if (headers['Content-Type'].includes('multipart/form-data')) {
-		const form = new FormData();
-		form.set('clientId', '27196');
-		form.set('vin', 'LVTDB21B7RE025306');
-		requestCfg.data = form;
+		const { files, ...fields } = await parser.parse(data);
+
+		const formData = new FormData();
+
+		Object.entries(fields).forEach(([key, value]) => {
+			formData.append(key, value);
+		});
+
+		files.forEach((file) => {
+			formData.append(file.fieldname, file.content);
+		});
+
+		requestCfg.data = formData;
 	}
 
 	if (include) {
