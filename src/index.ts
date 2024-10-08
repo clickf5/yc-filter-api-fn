@@ -93,17 +93,14 @@ export const handler: HttpHandler = async (data) => {
 		const boundary = headers['Content-Type'].split('boundary=')[1];
 		const parts = multipart.parse(rawBody, boundary);
 
-		requestCfg.headers = {
-			...requestCfg.headers,
-			'Content-Type': 'multipart/form-data',
-		};
-		requestCfg.data = {};
+		const form = new FormData();
 
-		for (let i = 0; i < parts.length; i++) {
-			if (Object.hasOwn(parts[i], 'type')) {
-				requestCfg.data[`${parts[i].name}[${i}]`] = parts[i].data;
+		for (const part of parts) {
+			if (Object.hasOwn(part, 'filename')) {
+				form.append(part.name ?? 'files', part.data);
+			} else {
+				form.append(part.name ?? '', part.data.toString());
 			}
-			requestCfg.data[`parts[${i}].name`] = parts[i].data.toString();
 		}
 	}
 
