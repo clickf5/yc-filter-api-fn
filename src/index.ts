@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import multipart from 'parse-multipart-data';
+import * as multipart from 'parse-multipart-data';
 
 export type HttpMethod = 'OPTIONS' | 'HEAD' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
