@@ -101,10 +101,10 @@ export const handler: HttpHandler = async (data) => {
 		});
 
 		files.forEach((file) => {
-			form.set('files', Readable.from(file.content));
+			form.set('files', file.content);
 		});
 
-		requestCfg.data = Buffer.from(body ?? '', 'base64');
+		requestCfg.data = form;
 	}
 
 	if (include) {
