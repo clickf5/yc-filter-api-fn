@@ -100,12 +100,9 @@ export const handler: HttpHandler = async (data) => {
 			'Content-Type': contentType,
 		};
 
-		const parsed = await parser.parse({
-			...data,
-			body: Buffer.from(body ?? '', 'base64').toString(),
-		});
+		const parsed = await parser.parse(data);
 
-		console.log(JSON.stringify(parsed));
+		console.log('parsed: ', JSON.stringify(parsed));
 	}
 
 	if (include) {
