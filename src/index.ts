@@ -93,15 +93,15 @@ export const handler: HttpHandler = async (data) => {
 		const boundary = headers['Content-Type'].split('boundary=')[1];
 		const parts = multipart.parse(rawBody, boundary);
 
-		const form = new FormData();
+		requestCfg.data = {
+			clientId: 27196,
+			vin: 'LVTDB21B7RE025306',
+		};
 
-		for (const part of parts) {
-			if (!Object.hasOwn(part, 'filename')) {
-				form.append(part.name ?? '', part.data.toString());
-			}
-		}
-
-		requestCfg.data = form;
+		requestCfg.headers = {
+			...requestCfg.headers,
+			'Content-Type': 'multipart/form-data',
+		};
 	}
 
 	if (include) {
