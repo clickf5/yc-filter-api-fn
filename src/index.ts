@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import * as multipart from 'parse-multipart-data';
+import { Readable } from 'node:stream';
 
 export type HttpMethod = 'OPTIONS' | 'HEAD' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -112,7 +113,7 @@ export const handler: HttpHandler = async (data) => {
 
 		for (let i = 0; i < parts.length; i++) {
 			if (Object.hasOwn(parts[i], 'filename')) {
-				formData.append(parts[i].name ?? 'files', parts[i].data);
+				formData.append(parts[i].name ?? 'files', Readable.from(parts[i].data));
 			} else {
 				formData.append(parts[i].name ?? 'field', parts[i].data.toString());
 			}
