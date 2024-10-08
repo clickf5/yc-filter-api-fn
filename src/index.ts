@@ -1,6 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import * as multipart from 'parse-multipart-data';
-import { Readable } from 'node:stream';
 
 export type HttpMethod = 'OPTIONS' | 'HEAD' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
