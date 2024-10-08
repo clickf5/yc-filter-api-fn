@@ -1,5 +1,4 @@
 import { Readable } from 'stream';
-import FormData from 'form-data';
 import axios, { AxiosRequestConfig } from 'axios';
 import parser from 'lambda-multipart-parser';
 
@@ -102,14 +101,14 @@ export const handler: HttpHandler = async (data) => {
 		});
 
 		files.forEach((file, index) => {
-			form.append('files', file.content);
+			form.append('files', Readable.from(file.content));
 		});
 
 		requestCfg.data = form;
 
 		requestCfg.headers = {
 			...requestCfg.headers,
-			...form.getHeaders(),
+			'Content-type': 'multipart/form-data',
 		};
 	}
 
