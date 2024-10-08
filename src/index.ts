@@ -83,14 +83,6 @@ export const handler: HttpHandler = async (data) => {
 		};
 	}
 
-	if (headers['Content-Type'].split(';')[0] === 'multipart/form-data') {
-		requestCfg.headers = {
-			...requestCfg.headers,
-			'Content-Type': headers['Content-Type'],
-			'Content-Length': headers['Content-Length'],
-		};
-	}
-
 	if (parameters) {
 		requestCfg.params = parameters;
 	}
