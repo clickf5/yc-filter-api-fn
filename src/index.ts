@@ -103,15 +103,17 @@ export const handler: HttpHandler = async (data) => {
 
 		const { files, ...fields } = await parser.parse(data);
 
-		const newData = { ...fields };
+		const form = new FormData();
 
-		files.forEach((file, index) => {
-			newData[`files[${index}]`] = file.content.toString('base64');
+		Object.entries(fields).forEach(([key, value]) => {
+			form.append(key, value);
 		});
 
-		requestCfg.data = newData;
+		files.forEach((file) => {
+			form.append('files', new Blob([file.content]));
+		});
 
-		// console.log('anything there');
+		requestCfg.data = form;
 	}
 
 	if (include) {
@@ -150,7 +152,7 @@ export const handler: HttpHandler = async (data) => {
 
 	// console.log(JSON.stringify(data));
 	// console.log(JSON.stringify(requestCfg));
-	console.log('body: ', data.body);
+	// console.log('body: ', data.body);
 
 	const response = await axios(requestCfg);
 
