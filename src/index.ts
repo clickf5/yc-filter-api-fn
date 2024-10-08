@@ -94,17 +94,25 @@ export const handler: HttpHandler = async (data) => {
 
 		console.log('fields: ', JSON.stringify(fields));
 
-		const form = new FormData();
+		const form = {};
 
-		Object.entries(fields).forEach(([key, value]) => {
-			form.set(key, value);
+		files.forEach((file, index) => {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
+			form[`file[${index}]`] = Readable.from(file.content);
 		});
 
-		files.forEach((file) => {
-			form.set('files', file.content);
+		Object.entries(fields).forEach(([key, value]) => {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
+			form[key] = value;
 		});
 
 		requestCfg.data = form;
+		requestCfg.headers = {
+			...requestCfg.headers,
+			'Content-Type': 'multipart/form-data',
+		};
 	}
 
 	if (include) {
