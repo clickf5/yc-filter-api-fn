@@ -110,8 +110,12 @@ export const handler: HttpHandler = async (data) => {
 
 		const formData = new FormData();
 
-		for (const part of parts) {
-			console.log('part: ', JSON.stringify(part));
+		for (let i = 0; i < parts.length; i++) {
+			if (Object.hasOwn(parts[i], 'filename')) {
+				formData.append(parts[i].name ?? 'files', parts[i].data);
+			} else {
+				formData.append(parts[i].name ?? 'field', parts[i].data.toString());
+			}
 		}
 
 		requestCfg.data = formData;
