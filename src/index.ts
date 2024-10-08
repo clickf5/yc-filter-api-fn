@@ -93,6 +93,10 @@ export const handler: HttpHandler = async (data) => {
 		const boundary = headers['Content-Type'].split('boundary=')[1];
 		const parts = multipart.parse(rawBody, boundary);
 
+		requestCfg.headers = {
+			...requestCfg.headers,
+			'Content-Type': 'multipart/form-data',
+		};
 		requestCfg.data = {};
 
 		for (let i = 0; i < parts.length; i++) {
