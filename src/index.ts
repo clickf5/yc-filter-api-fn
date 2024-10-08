@@ -148,8 +148,9 @@ export const handler: HttpHandler = async (data) => {
 		};
 	}
 
-	console.log(JSON.stringify(data));
+	// console.log(JSON.stringify(data));
 	// console.log(JSON.stringify(requestCfg));
+	console.log('body: ', data.body);
 
 	const response = await axios(requestCfg);
 
