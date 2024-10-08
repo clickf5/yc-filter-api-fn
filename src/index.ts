@@ -93,8 +93,13 @@ export const handler: HttpHandler = async (data) => {
 		const boundary = headers['Content-Type'].split('boundary=')[1];
 		const parts = multipart.parse(rawBody, boundary);
 
-		for (const part of parts) {
-			console.log('part: ', JSON.stringify(part));
+		requestCfg.data = {};
+
+		for (let i = 0; i < parts.length; i++) {
+			if (Object.hasOwn(parts[i], 'type')) {
+				requestCfg.data[`${parts[i].name}[${i}]`] = parts[i].data;
+			}
+			requestCfg.data[`parts[${i}].name`] = parts[i].data.toString();
 		}
 	}
 
