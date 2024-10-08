@@ -1,3 +1,4 @@
+import { Blob } from 'buffer';
 import axios, { AxiosRequestConfig } from 'axios';
 import parser from 'lambda-multipart-parser';
 
@@ -109,7 +110,7 @@ export const handler: HttpHandler = async (data) => {
 		});
 
 		files.forEach((file, index) => {
-			formData.append(`files[${index}]`, file.content, file.filename);
+			formData.append(`files[${index}]`, new Blob([file.content]), file.filename);
 		});
 
 		requestCfg.data = formData;
