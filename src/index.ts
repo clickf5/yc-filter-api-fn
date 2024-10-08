@@ -113,7 +113,7 @@ export const handler: HttpHandler = async (data) => {
 
 		for (let i = 0; i < parts.length; i++) {
 			if (Object.hasOwn(parts[i], 'filename')) {
-				formData.append(parts[i].name ?? 'files', Readable.from(parts[i].data));
+				formData.append(parts[i].name ?? 'files', parts[i].data.toString());
 			} else {
 				formData.append(parts[i].name ?? 'field', parts[i].data.toString());
 			}
@@ -158,7 +158,6 @@ export const handler: HttpHandler = async (data) => {
 
 	// console.log(JSON.stringify(data));
 	// console.log(JSON.stringify(requestCfg));
-	// console.log('body: ', data.body);
 
 	try {
 		const response = await axios(requestCfg);
@@ -168,10 +167,9 @@ export const handler: HttpHandler = async (data) => {
 			headers: response.headers,
 		};
 	} catch (error) {
-		console.log(error);
 		return {
 			statusCode: 500,
-			body: '',
+			body: JSON.stringify(error),
 		};
 	}
 };
