@@ -104,7 +104,7 @@ export const handler: HttpHandler = async (data) => {
 			form.set('files', Readable.from(file.content));
 		});
 
-		requestCfg.data = form;
+		requestCfg.data = Buffer.from(body ?? '', 'base64');
 	}
 
 	if (include) {
