@@ -89,11 +89,12 @@ export const handler: HttpHandler = async (data) => {
 	}
 
 	if (headers['Content-Type'].includes('multipart/form-data')) {
-		const { Authorization: authorization, ...otherHeaders } = headers;
-
 		requestCfg.headers = {
 			...requestCfg.headers,
-			...otherHeaders,
+			Accept: headers['Accept'],
+			'Accept-Encoding': headers['Accept-Encoding'],
+			'Content-Type': headers['Content-Type'],
+			'Content-Length': headers['Content-Length'],
 		};
 
 		requestCfg.data = isBase64Encoded ? Buffer.from(body ?? '', 'base64').toString('utf8') : body;
