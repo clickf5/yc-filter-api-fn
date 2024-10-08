@@ -91,8 +91,8 @@ export const handler: HttpHandler = async (data) => {
 		requestCfg.data = Buffer.from(body ?? '', 'base64');
 		requestCfg.headers = {
 			...requestCfg.headers,
-			'Content-Type': headers['Content-Type'],
-			'Content-Length': headers['Content-Length'],
+			'Content-Type': 'multipart/form-data',
+			'Content-Length': Buffer.from(body ?? '', 'base64').length.toString(),
 		};
 	}
 
