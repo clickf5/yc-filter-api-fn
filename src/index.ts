@@ -96,9 +96,7 @@ export const handler: HttpHandler = async (data) => {
 		const form = new FormData();
 
 		for (const part of parts) {
-			if (Object.hasOwn(part, 'filename')) {
-				form.append(part.name ?? 'files', part.data);
-			} else {
+			if (!Object.hasOwn(part, 'filename')) {
 				form.append(part.name ?? '', part.data.toString());
 			}
 		}
