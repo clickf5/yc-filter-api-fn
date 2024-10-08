@@ -1,6 +1,4 @@
-import { Readable } from 'stream';
 import axios, { AxiosRequestConfig } from 'axios';
-import parser from 'lambda-multipart-parser';
 
 export type HttpMethod = 'OPTIONS' | 'HEAD' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -57,7 +55,7 @@ export const handler: HttpHandler = async (data) => {
 		body,
 		httpMethod,
 		parameters,
-		headers: { 'Content-Type': contentType = '', 'Content-Length': contentLength = '' } = {},
+		headers,
 		requestContext: { apiGateway: { operationContext: { host, auth, include } = {} } = {} } = {},
 	} = data;
 
@@ -89,29 +87,12 @@ export const handler: HttpHandler = async (data) => {
 		requestCfg.data = body;
 	}
 
-	if (contentType.includes('multipart/form-data')) {
-		const { files, ...fields } = await parser.parse(data);
-
-		console.log('fields: ', JSON.stringify(fields));
-
-		const form = {};
-
-		files.forEach((file, index) => {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-expect-error
-			form[`file[${index}]`] = Readable.from(file.content);
-		});
-
-		Object.entries(fields).forEach(([key, value]) => {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-expect-error
-			form[key] = value;
-		});
-
-		requestCfg.data = form;
+	if (headers['Content-Type'].includes('multipart/form-data')) {
+		requestCfg.data = body;
 		requestCfg.headers = {
 			...requestCfg.headers,
-			'Content-Type': 'multipart/form-data',
+			'Content-Type': headers['Content-Type'],
+			'Content-Length': headers['Content-Length'],
 		};
 	}
 
