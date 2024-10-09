@@ -110,11 +110,14 @@ export const handler: HttpHandler = async (data) => {
 
 		const formData = new FormData();
 
+		let countFiles = 0;
+
 		for (let i = 0; i < parts.length; i++) {
 			const part = parts[i];
 			console.log('part', i, ': ', JSON.stringify(part));
 			if (Object.hasOwn(part, 'filename')) {
-				formData.append(part.name ?? 'files', new Blob([part.data]), part.filename);
+				formData.append(`${part.name}[${countFiles}]`, new Blob([part.data]), part.filename);
+				countFiles++;
 			} else {
 				formData.append(part.name ?? 'field', part.data.toString());
 			}
