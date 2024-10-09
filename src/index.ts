@@ -70,7 +70,7 @@ export const handler: HttpHandler = async (data) => {
 		body,
 		httpMethod,
 		parameters,
-		headers,
+		headers: { 'Content-Type': contentType = '' } = {},
 		requestContext: { apiGateway: { operationContext: { host, auth, include } = {} } = {} } = {},
 	} = data;
 
@@ -102,9 +102,9 @@ export const handler: HttpHandler = async (data) => {
 		requestCfg.data = body;
 	}
 
-	if (headers['Content-Type'].includes('multipart/form-data')) {
+	if (contentType.includes('multipart/form-data')) {
 		const rowBody = Buffer.from(body ?? '', 'base64');
-		const boundary = headers['Content-Type'].split('boundary=')[1];
+		const boundary = contentType.split('boundary=')[1];
 
 		const parts = multipart.parse(rowBody, boundary);
 
