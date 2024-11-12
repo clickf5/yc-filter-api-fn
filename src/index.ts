@@ -70,6 +70,7 @@ export const handler: HttpHandler = async (data) => {
 		body,
 		httpMethod,
 		parameters,
+		multiValueQueryStringParameters,
 		headers: { 'Content-Type': contentType = '' } = {},
 		requestContext: { apiGateway: { operationContext: { host, auth, include } = {} } = {} } = {},
 	} = data;
@@ -96,6 +97,15 @@ export const handler: HttpHandler = async (data) => {
 
 	if (parameters) {
 		requestCfg.params = parameters;
+	}
+
+	if (multiValueQueryStringParameters) {
+		Object.entries(multiValueQueryStringParameters).forEach(([key, value], index) => {
+			requestCfg.params = {
+				...requestCfg.params,
+				[`${key}[${index}]`]: value,
+			};
+		});
 	}
 
 	if (body) {
