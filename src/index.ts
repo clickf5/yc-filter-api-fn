@@ -98,6 +98,8 @@ export const handler: HttpHandler = async (data) => {
 		requestCfg.params = parameters;
 	}
 
+	console.log(JSON.stringify(parameters));
+
 	if (body) {
 		requestCfg.data = body;
 	}
