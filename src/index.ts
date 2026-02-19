@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as multipart from 'parse-multipart-data';
 
 export type HttpMethod = 'OPTIONS' | 'HEAD' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -63,6 +63,30 @@ axios.interceptors.response.use(
 		}
 	},
 );
+
+const isResponseEpmty = (resp: AxiosResponse): boolean => resp.data.length === 0;
+
+const isPath = (path: string, cfg: AxiosRequestConfig): boolean => cfg.url === path;
+
+const isParam = (param: string, cfg: AxiosRequestConfig): boolean =>
+	Boolean(cfg.params?.[param] !== undefined);
+
+const shouldRetryWithReplacedParam = async (
+	resp: AxiosResponse,
+	cfg: AxiosRequestConfig,
+	path: string,
+	param: string,
+	newParam: string,
+): Promise<AxiosResponse> => {
+	if (!(isResponseEpmty(resp) && isPath(path, cfg) && isParam(param, cfg))) {
+		return resp;
+	}
+
+	cfg.params[newParam] = cfg.params[param];
+	delete cfg.params[param];
+
+	return await axios(cfg);
+};
 
 export const handler: HttpHandler = async (data) => {
 	const {
@@ -172,11 +196,15 @@ export const handler: HttpHandler = async (data) => {
 		};
 	}
 
-	// console.log('data: ' + JSON.stringify(data));
-	// console.log('requestCfg: ' + JSON.stringify(requestCfg));
-
 	try {
-		const response = await axios(requestCfg);
+		const response = await shouldRetryWithReplacedParam(
+			await axios(requestCfg),
+			requestCfg,
+			'/client',
+			'phone',
+			'contactPersonPhone',
+		);
+
 		return {
 			statusCode: response.status,
 			body: JSON.stringify(response.data),
