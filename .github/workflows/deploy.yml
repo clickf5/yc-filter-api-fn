@@ -19,7 +19,7 @@ jobs:
         run: npm run build
       - name: Deploy YC function
         id: sls-func
-        uses: yc-actions/yc-sls-function@v2
+        uses: yc-actions/yc-sls-function@v4
         with:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
           bucket: ${{ secrets.BUCKET }}
