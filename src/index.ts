@@ -99,6 +99,8 @@ export const handler: HttpHandler = async (data) => {
 		requestContext: { apiGateway: { operationContext: { host, auth, include } = {} } = {} } = {},
 	} = data;
 
+	console.log('data', JSON.stringify(data));
+
 	const requestCfg: AxiosRequestConfig = {
 		url: path,
 		method: httpMethod.toLowerCase(),
@@ -121,7 +123,6 @@ export const handler: HttpHandler = async (data) => {
 
 	if (parameters) {
 		requestCfg.params = parameters;
-		console.log('parameters', requestCfg.params);
 	}
 
 	if (multiValueQueryStringParameters) {
