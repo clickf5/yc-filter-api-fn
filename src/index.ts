@@ -121,7 +121,6 @@ export const handler: HttpHandler = async (data) => {
 
 	if (parameters) {
 		requestCfg.params = parameters;
-		console.log('parameters', requestCfg.params);
 	}
 
 	if (multiValueQueryStringParameters) {
