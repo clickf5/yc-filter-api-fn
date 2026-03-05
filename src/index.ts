@@ -93,7 +93,6 @@ export const handler: HttpHandler = async (data) => {
 		path,
 		body,
 		httpMethod,
-		parameters,
 		queryStringParameters,
 		multiValueQueryStringParameters,
 		headers: { 'Content-Type': contentType = '' } = {},
@@ -129,10 +128,6 @@ export const handler: HttpHandler = async (data) => {
 				};
 			});
 		});
-	}
-
-	if (parameters) {
-		requestCfg.params = parameters;
 	}
 
 	if (queryStringParameters) {
