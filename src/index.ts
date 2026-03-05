@@ -94,12 +94,11 @@ export const handler: HttpHandler = async (data) => {
 		body,
 		httpMethod,
 		parameters,
+		queryStringParameters,
 		multiValueQueryStringParameters,
 		headers: { 'Content-Type': contentType = '' } = {},
 		requestContext: { apiGateway: { operationContext: { host, auth, include } = {} } = {} } = {},
 	} = data;
-
-	console.log('data', JSON.stringify(data));
 
 	const requestCfg: AxiosRequestConfig = {
 		url: path,
@@ -121,10 +120,6 @@ export const handler: HttpHandler = async (data) => {
 		};
 	}
 
-	if (parameters) {
-		requestCfg.params = parameters;
-	}
-
 	if (multiValueQueryStringParameters) {
 		Object.entries(multiValueQueryStringParameters).forEach(([key, values]) => {
 			values.forEach((value, index) => {
@@ -134,6 +129,17 @@ export const handler: HttpHandler = async (data) => {
 				};
 			});
 		});
+	}
+
+	if (parameters) {
+		requestCfg.params = parameters;
+	}
+
+	if (queryStringParameters) {
+		requestCfg.params = {
+			...requestCfg.params,
+			...queryStringParameters,
+		};
 	}
 
 	if (body) {
