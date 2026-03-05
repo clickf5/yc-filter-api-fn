@@ -124,12 +124,11 @@ export const handler: HttpHandler = async (data) => {
 	}
 
 	if (multiValueQueryStringParameters) {
-		console.log('multiValueQueryStringParameters', multiValueQueryStringParameters);
 		Object.entries(multiValueQueryStringParameters).forEach(([key, values]) => {
 			values.forEach((value, index) => {
 				requestCfg.params = {
 					...requestCfg.params,
-					[`${key.substring(0, key.length - 2)}[${index}]`]: value,
+					[`${key.substring(0, key.length - 2)}[${index}]`]: value.length > 0 ? value : value[0],
 				};
 			});
 		});
