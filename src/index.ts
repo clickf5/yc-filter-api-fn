@@ -1,5 +1,9 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import dayjs from 'dayjs';
+import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import * as multipart from 'parse-multipart-data';
+
+dayjs.extend(quarterOfYear);
 
 export type HttpMethod = 'OPTIONS' | 'HEAD' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -32,6 +36,7 @@ export interface Event {
 				};
 				include?: string[];
 				defValue?: Record<string, string | number>;
+				limitDateParam?: Record<string, 'Q' | 'w' | 'd'>;
 			};
 		};
 	};
@@ -98,7 +103,7 @@ export const handler: HttpHandler = async (data) => {
 		multiValueQueryStringParameters,
 		headers: { 'Content-Type': contentType = '' } = {},
 		requestContext: {
-			apiGateway: { operationContext: { host, auth, include, defValue } = {} } = {},
+			apiGateway: { operationContext: { host, auth, include, defValue, limitDateParam } = {} } = {},
 		} = {},
 	} = data;
 
@@ -206,6 +211,21 @@ export const handler: HttpHandler = async (data) => {
 		Object.entries(defValue).forEach(([key, value]) => {
 			delete requestCfg.params[key];
 			requestCfg.params[key] = value;
+		});
+	}
+
+	if (limitDateParam) {
+		const frmt = 'MM.DD.YYYY hh:mm:ss';
+		Object.entries(limitDateParam).forEach(([key, value]) => {
+			if (!Object.hasOwn(requestCfg.params, key)) {
+				requestCfg.params[key] = dayjs().startOf(value).format(frmt);
+			} else {
+				const quarter = dayjs().startOf('Q');
+				const paramValue = dayjs(requestCfg.params[key], frmt);
+				if (quarter.isAfter(paramValue)) {
+					requestCfg.params[key] = quarter.format(frmt);
+				}
+			}
 		});
 	}
 
