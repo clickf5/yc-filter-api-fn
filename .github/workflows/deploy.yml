@@ -8,24 +8,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
-      - name: Use node.js v18
-        uses: actions/setup-node@v4
+        uses: actions/checkout@v7
+      - name: Use node.js v22
+        uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: 22
       - name: Install dependencies
         run: npm ci
       - name: Build
         run: npm run build
       - name: Deploy YC function
         id: sls-func
-        uses: yc-actions/yc-sls-function@v4
+        uses: yc-actions/yc-sls-function@v5
         with:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
           bucket: ${{ secrets.BUCKET }}
           folder-id: 'b1g46471u05u2sfq1brd'
           function-name: 'yc-filter-api-fn'
-          runtime: 'nodejs18'
+          runtime: 'nodejs22'
           execution-timeout: '600'
           memory: '1024Mb'
           entrypoint: 'dist/index.handler'
