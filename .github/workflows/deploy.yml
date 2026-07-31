@@ -6,15 +6,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
       - name: Use node.js v18
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 24
       - name: Install dependencies
         run: npm ci
       - name: Build
