@@ -1,14 +1,16 @@
 {
   "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
+    "rootDir": "./src",
     "outDir": "./dist",
     "removeComments": true,
     "strictPropertyInitialization": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "CommonJS",
-    "moduleResolution": "Node",
+    "moduleResolution": "node10",
     "esModuleInterop": true,
     "sourceMap": false,
+    "ignoreDeprecations": "6.0"
   }
 }

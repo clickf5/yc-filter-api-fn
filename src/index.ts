@@ -31,6 +31,7 @@ export interface Event {
 					password?: string;
 				};
 				include?: string[];
+				defValue?: Record<string, string | number>;
 			};
 		};
 	};
@@ -96,7 +97,9 @@ export const handler: HttpHandler = async (data) => {
 		queryStringParameters,
 		multiValueQueryStringParameters,
 		headers: { 'Content-Type': contentType = '' } = {},
-		requestContext: { apiGateway: { operationContext: { host, auth, include } = {} } = {} } = {},
+		requestContext: {
+			apiGateway: { operationContext: { host, auth, include, defValue } = {} } = {},
+		} = {},
 	} = data;
 
 	const requestCfg: AxiosRequestConfig = {
@@ -197,6 +200,13 @@ export const handler: HttpHandler = async (data) => {
 				);
 			}
 		};
+	}
+
+	if (defValue) {
+		Object.entries(defValue).forEach(([key, value]) => {
+			delete requestCfg.params[key];
+			requestCfg.params[key] = value;
+		});
 	}
 
 	try {
