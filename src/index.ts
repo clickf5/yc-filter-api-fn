@@ -56,13 +56,13 @@ interface Result {
 
 type HttpHandler = (event: Event) => Promise<Result>;
 
-// нужно отрабатывать 400 ошибки и 500ю
+// нужно отрабатывать 400 ошибки
 axios.interceptors.response.use(
 	(response) => {
 		return response;
 	},
 	function (error) {
-		if (error.response.status >= 400 && error.response.status <= 500) {
+		if (error.response.status >= 400 && error.response.status <= 499) {
 			return Promise.resolve(error.response);
 		} else {
 			return Promise.reject(error.response);
