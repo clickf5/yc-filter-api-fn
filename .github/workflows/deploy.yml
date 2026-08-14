@@ -35,7 +35,7 @@ jobs:
           exclude: |
             **/*.ts
       - name: Deploy YC function 2
-        id: sls-func
+        id: sls-func2
         uses: yc-actions/yc-sls-function@v5
         with:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
