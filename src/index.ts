@@ -62,6 +62,8 @@ axios.interceptors.response.use(
 		return response;
 	},
 	function (error) {
+		console.log('Error: ');
+		console.log(JSON.stringify(error));
 		if (error.response.status >= 400 && error.response.status <= 499) {
 			return Promise.resolve(error.response);
 		} else {
@@ -226,7 +228,6 @@ export const handler: HttpHandler = async (data) => {
 			headers: response.headers,
 		};
 	} catch (error) {
-		console.log(error);
 		return {
 			statusCode: 500,
 			body: JSON.stringify(error),
