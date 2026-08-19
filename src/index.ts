@@ -96,6 +96,7 @@ export const handler: HttpHandler = async (data) => {
 		url: path,
 		method: httpMethod.toLowerCase(),
 		baseURL: host,
+		timeout: 10000,
 	};
 
 	if (auth && auth.type === 'Basic') {
