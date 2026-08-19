@@ -56,14 +56,27 @@ interface Result {
 
 type HttpHandler = (event: Event) => Promise<Result>;
 
-// нужно отрабатывать 400 ошибки
 axios.interceptors.response.use(
 	(response) => {
 		return response;
 	},
-	function (error) {
-		console.log('Error: ');
-		console.log(JSON.stringify(error));
+	async (error) => {
+		const config = error.config;
+
+		if (!config || !config.retryCount) {
+			config.retryCount = 0;
+		}
+
+		const MAX_RETRIES = 3;
+
+		if (error.code === 'ECONNRESET' && config.retryCount < MAX_RETRIES) {
+			config.retryCount += 1;
+
+			console.warn(`ECONNRESET: Попытка повтора №${config.retryCount}...`);
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+			return axios(config);
+		}
+
 		if (error.response.status >= 400 && error.response.status <= 499) {
 			return Promise.resolve(error.response);
 		} else {
