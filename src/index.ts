@@ -92,6 +92,23 @@ const isPath = (path: string, cfg: AxiosRequestConfig): boolean => cfg.url === p
 const isParam = (param: string, cfg: AxiosRequestConfig): boolean =>
 	Boolean(cfg.params?.[param] !== undefined);
 
+const shouldRetryWithReplacedParam = async (
+	resp: AxiosResponse,
+	cfg: AxiosRequestConfig,
+	path: string,
+	param: string,
+	newParam: string,
+): Promise<AxiosResponse> => {
+	if (!(isResponseEpmty(resp) && isPath(path, cfg) && isParam(param, cfg))) {
+		return resp;
+	}
+
+	cfg.params[newParam] = cfg.params[param];
+	delete cfg.params[param];
+
+	return await axios(cfg);
+};
+
 export const handler: HttpHandler = async (data) => {
 	const {
 		path,
@@ -109,7 +126,6 @@ export const handler: HttpHandler = async (data) => {
 		url: path,
 		method: httpMethod.toLowerCase(),
 		baseURL: host,
-		timeout: 10000,
 	};
 
 	if (auth && auth.type === 'Basic') {
@@ -229,12 +245,13 @@ export const handler: HttpHandler = async (data) => {
 	}
 
 	try {
-		if (requestCfg.url === '/client') {
-			requestCfg.params['contactPersonPhone'] = requestCfg.params['phone'];
-			delete requestCfg.params['phone'];
-		}
-
-		const response = await axios(requestCfg);
+		const response = await shouldRetryWithReplacedParam(
+			await axios(requestCfg),
+			requestCfg,
+			'/client',
+			'phone',
+			'contactPersonPhone',
+		);
 
 		return {
 			statusCode: response.status,
@@ -242,6 +259,7 @@ export const handler: HttpHandler = async (data) => {
 			headers: response.headers,
 		};
 	} catch (error) {
+		console.log(error);
 		return {
 			statusCode: 500,
 			body: JSON.stringify(error),
